@@ -99,10 +99,14 @@ async def run_scraper():
 # --- PART 3: Posting to Telegram ---
 
 def escape_markdown(text):
-    """Escapes Telegram Markdown special characters."""
+    """
+    Escapes the basic special characters for original Telegram Markdown.
+    """
     if not text:
         return ""
-    return re.sub(r'([_*[\]()~`>#+\-=|{}.!])', r'\\\1', text)
+    # Only escape _, *, [, and `, as per Markdown (not MarkdownV2)
+    return re.sub(r'([_*`\[])', r'\\\1', text)
+
 
 def format_offers(offers):
     if not offers:
@@ -190,3 +194,4 @@ if __name__ == "__main__":
     for product in enriched_products:
         send_post(product)
         time.sleep(POST_DELAY)
+
