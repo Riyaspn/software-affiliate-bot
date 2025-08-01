@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Travel-Code",
+    "website": "https://travel-code.com/",
+    "category": "Travel / Automation",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Ftravel-code.com%2F",
+    "direct_affiliate": false,
+    "tags": [
+      "travel",
+      "tools"
+    ],
+    "desc": "Travel smarter—plan, automate, and save with a full toolkit for modern explorers and businesses.",
+    "image": "https://travel-code.com/images/seo/apple-touch-icon-180x180.png"
+  },
+  {
+    "name": "Reisemoto",
+    "website": "https://reisemoto.com/",
+    "category": "Travel / Services",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Freisemoto.com%2F",
+    "direct_affiliate": false,
+    "tags": [
+      "travel"
+    ],
+    "desc": "Your destination for premium riding gear, waterproof luggage, and travel accessories for bikers.",
+    "offers": [
+      "Viaterra  LEH - 100% WATERPROOF SADDLEBAGS  ₹ 4,999 or₹625/M on EMI >",
+      "LEH - 100% WATERPROOF SADDLEBAGS",
+      "Viaterra  CLAW MINI - 100% WATERPROOF TAILBAG  ₹ 3,899 or₹487/M on EMI >",
+      "CLAW MINI - 100% WATERPROOF TAILBAG",
+      "OFF ROAD / DIRT",
+      "Offer T&Cs",
+      "We will notify you on events like Low stock, Restock, Price drop or general reminders so that you don’t miss the deal",
+      "Login to save your wishlist."
+    ],
+    "image": "http://www.reisemoto.com/cdn/shop/files/Reisemoto-JOY-OF-RIDING_1.png?crop=center&height=1200&v=1708691545&width=1200"
+  },
+  {
+    "name": "SimOptions",
+    "website": "https://www.simoptions.com/",
+    "category": "Telecom / International SIMs",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fwww.simoptions.com%2F",
+    "direct_affiliate": false,
+    "tags": [
+      "sim",
+      "travel"
+    ],
+    "desc": "Save on roaming with global eSIMs and international SIM cards. Travel-connected in 200+ countries.",
+    "image": "https://www.simoptions.com/wp/wp-content/uploads/2024/03/simoptions-open-graph-1200x630-prepaid-esim-1.jpg"
+  }
+]

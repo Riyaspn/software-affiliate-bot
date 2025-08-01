@@ -1,0 +1,245 @@
+[
+  {
+    "name": "MindManager",
+    "website": "https://www.mindmanager.com/",
+    "category": "Productivity / Mind Mapping",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fwww.mindmanager.com%2F",
+    "direct_affiliate": false,
+    "tags": ["productivity", "mindmapping"],
+    "desc": "Map ideas, plan projects and organize tasks visually with MindManager—the ultimate tool for productivity and brainstorming."
+  },
+  {
+    "name": "Verpex",
+    "website": "https://verpex.com/",
+    "category": "Web Hosting",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fverpex.com%2F",
+    "direct_affiliate": false,
+    "tags": ["hosting", "web"],
+    "desc": "Get fast, reliable, and affordable website hosting with Verpex. Perfect for businesses, blogs, and e-commerce sites."
+  },
+  {
+    "name": "Google Play",
+    "website": "https://play.google.com/",
+    "category": "Marketplace",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fplay.google.com%2F",
+    "direct_affiliate": false,
+    "tags": ["apps", "marketplace"],
+    "desc": "The official Android app store – discover, buy and download millions of games, apps, movies, and more!"
+  },
+  {
+    "name": "PDFfiller",
+    "website": "https://www.pdffiller.com/",
+    "category": "PDF Editor",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fwww.pdffiller.com%2F",
+    "direct_affiliate": false,
+    "tags": ["pdf", "documents"],
+    "desc": "Easily edit, e-sign, and share PDFs online with PDFfiller. No downloads—just fast, powerful online PDF tools."
+  },
+  {
+    "name": "Campaigner",
+    "website": "https://www.campaigner.com/",
+    "category": "Email Marketing",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fwww.campaigner.com%2F",
+    "direct_affiliate": false,
+    "tags": ["email", "marketing"],
+    "desc": "Powerful email marketing for businesses of any size. Automate campaigns, grow your list, and increase sales."
+  },
+  {
+    "name": "RunPod",
+    "website": "https://www.runpod.io/",
+    "category": "Cloud Computing / AI",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fwww.runpod.io%2F",
+    "direct_affiliate": false,
+    "tags": ["ai", "cloud"],
+    "desc": "Affordable, on-demand cloud GPUs for AI, ML, and rendering workloads. Deploy powerful compute in seconds."
+  },
+  {
+    "name": "Deel",
+    "website": "https://www.deel.com/",
+    "category": "HR / Payroll",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fwww.deel.com%2F",
+    "direct_affiliate": false,
+    "tags": ["hr", "payroll"],
+    "desc": "Simplify international hiring, payroll, and compliance for remote teams—trusted by startups and enterprises."
+  },
+  {
+    "name": "EaseUS",
+    "website": "https://www.easeus-software.com/",
+    "category": "Utility / Backup",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Feaseus-software.com%2F",
+    "direct_affiliate": false,
+    "tags": ["backup", "recovery"],
+    "desc": "Protect your data with EaseUS backup, recovery, and partition tools—easy and trusted worldwide."
+  },
+  {
+    "name": "Neemoe",
+    "website": "https://myneemoe.in/",
+    "category": "Productivity / Work Apps",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fmyneemoe.in%2F",
+    "direct_affiliate": false,
+    "tags": ["productivity"],
+    "desc": "Boost your productivity with Neemoe—your all-in-one suite for office collaboration and workflow efficiency."
+  },
+  {
+    "name": "Reisemoto",
+    "website": "https://reisemoto.com/",
+    "category": "Travel / Services",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Freisemoto.com%2F",
+    "direct_affiliate": false,
+    "tags": ["travel"],
+    "desc": "Your destination for premium riding gear, waterproof luggage, and travel accessories for bikers."
+  },
+  {
+    "name": "Geeklane",
+    "website": "https://geeklane.in/",
+    "category": "Technology / Gadgets",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fgeeklane.in%2F",
+    "direct_affiliate": false,
+    "tags": ["tech", "gadgets"],
+    "desc": "Discover the latest, coolest gadgets, electronics, and tech accessories at affordable prices."
+  },
+  {
+    "name": "SimOptions",
+    "website": "https://www.simoptions.com/",
+    "category": "Telecom / International SIMs",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fwww.simoptions.com%2F",
+    "direct_affiliate": false,
+    "tags": ["sim", "travel"],
+    "desc": "Save on roaming with global eSIMs and international SIM cards. Travel-connected in 200+ countries."
+  },
+  {
+    "name": "Jetpac Global",
+    "website": "https://jetpacglobal.com/",
+    "category": "Tech / Services",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fjetpacglobal.com%2F",
+    "direct_affiliate": false,
+    "tags": ["services"],
+    "desc": "Smart, secure tech logistics and services for a connected world—Jetpac powers seamless digital solutions."
+  },
+  {
+    "name": "Trusted",
+    "website": "https://gettrusted.io/",
+    "category": "Security / Reviews",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fgettrusted.io%2F",
+    "direct_affiliate": false,
+    "tags": ["security", "trust"],
+    "desc": "Discover trusted reviews, ratings, and security insights for safer online experiences and purchases."
+  },
+  {
+    "name": "Instax",
+    "website": "https://instax.in/",
+    "category": "Photo / Instant Camera",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Finstax.in%2F",
+    "direct_affiliate": false,
+    "tags": ["camera", "photo"],
+    "desc": "Snap, print, and share memories instantly with Instax instant cameras—fun for every moment!"
+  },
+  {
+    "name": "Mysterium VPN",
+    "website": "https://mysteriumvpn.com/",
+    "category": "VPN / Privacy",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fmysteriumvpn.com%2F",
+    "direct_affiliate": false,
+    "tags": ["vpn", "privacy"],
+    "desc": "Browse safely and unlock content worldwide with Mysterium—a decentralized, secure VPN for real privacy."
+  },
+  {
+    "name": "FastestVPN",
+    "website": "https://fastestvpn.com/",
+    "category": "VPN / Security",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Ffastestvpn.com%2F",
+    "direct_affiliate": false,
+    "tags": ["vpn", "security"],
+    "desc": "Protect your privacy, stream at full speed, and stay secure on any device with FastestVPN."
+  },
+  {
+    "name": "Blinq",
+    "website": "https://blinq.me/",
+    "category": "Digital Business Cards",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fblinq.me%2F",
+    "direct_affiliate": false,
+    "tags": ["business", "cards"],
+    "desc": "Create and share your digital business card instantly—networking made smart, stylish, and eco-friendly."
+  },
+  {
+    "name": "Centripe",
+    "website": "https://www.centripe.com/",
+    "category": "Finance / Fintech",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fwww.centripe.com%2F",
+    "direct_affiliate": false,
+    "tags": ["finance", "fintech"],
+    "desc": "All-in-one fintech platform—manage payments, accounts, and budgeting with speed and security."
+  },
+  {
+    "name": "PipelinePRO",
+    "website": "https://getpipelinepro.net/",
+    "category": "CRM / Funnels",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fgetpipelinepro.net%2F",
+    "direct_affiliate": false,
+    "tags": ["crm", "funnels"],
+    "desc": "Convert more leads and automate sales with PipelinePRO—an intuitive CRM and funnel builder for growth."
+  },
+  {
+    "name": "Travel-Code",
+    "website": "https://travel-code.com/",
+    "category": "Travel / Automation",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Ftravel-code.com%2F",
+    "direct_affiliate": false,
+    "tags": ["travel", "tools"],
+    "desc": "Travel smarter—plan, automate, and save with a full toolkit for modern explorers and businesses."
+  },
+  {
+    "name": "Jibble",
+    "website": "https://web.jibble.io/",
+    "category": "Time Tracking",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fweb.jibble.io%2F",
+    "direct_affiliate": false,
+    "tags": ["time", "productivity"],
+    "desc": "Easy time tracking and attendance for teams—free up admin time and boost productivity."
+  },
+  {
+    "name": "Laplink",
+    "website": "https://go.laplink.com/",
+    "category": "PC Migration / Utility",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fgo.laplink.com%2F",
+    "direct_affiliate": false,
+    "tags": ["pc", "tools"],
+    "desc": "Migrate or clone your PC fast—Laplink moves files, apps, and settings for seamless upgrades."
+  },
+  {
+    "name": "International Open Academy",
+    "website": "https://internationalopenacademy.com/",
+    "category": "Online Courses",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Finternationalopenacademy.com%2F",
+    "direct_affiliate": false,
+    "tags": ["learning", "courses"],
+    "desc": "Learn new skills from anywhere! Online courses for careers, hobbies, IT, business, and more."
+  },
+  {
+    "name": "Ultahost",
+    "website": "https://ultahost.com/",
+    "category": "Hosting",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fultahost.com%2F",
+    "direct_affiliate": false,
+    "tags": ["hosting"],
+    "desc": "Web, VPS, and cloud hosting—ultra-fast servers, top-notch support, and competitive prices."
+  },
+  {
+    "name": "Switcher Studio",
+    "website": "https://www.switcherstudio.com/",
+    "category": "Live Streaming",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fwww.switcherstudio.com%2F",
+    "direct_affiliate": false,
+    "tags": ["live", "video"],
+    "desc": "Easily create pro-quality live streams using your iPhone or iPad—Switcher Studio makes broadcasting simple."
+  },
+  {
+    "name": "Zigly",
+    "website": "https://www.zigly.com/",
+    "category": "Pets / E-commerce",
+    "affiliate_link": "https://linksredirect.com/?cid=241055&source=linkkit&url=https%3A%2F%2Fwww.zigly.com%2F",
+    "direct_affiliate": false,
+    "tags": ["pets", "ecommerce"],
+    "desc": "One-stop shop for your pets—order food, toys, accessories, and get care tips from Zigly."
+  }
+]
