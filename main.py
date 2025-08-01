@@ -149,7 +149,7 @@ def send_post(product):
         f"🔥 *{name_md}* — _{category_md}_\n"
         f"{desc_md}\n"
         f"{offers_text}\n"
-        f"👉 [Grab this deal!]({url})\n"
+        f"👉 [Grab this deal!]({url})\n\n\n"
         f"{tags_str}"
     )
 
@@ -194,4 +194,5 @@ if __name__ == "__main__":
     for product in enriched_products:
         send_post(product)
         time.sleep(POST_DELAY)
+
 
