@@ -24,22 +24,27 @@ def shorten_offer_text(text, max_length=200):
     text = clean_text(text)
     return text if len(text) <= max_length else text[:max_length].rstrip() + '...'
 
+import os
 import logging
 from datetime import datetime
-import os
 
-def setup_logger(name="software_bot", log_file=None):
-    if not log_file:
-        date_str = datetime.now().strftime("%Y-%m-%d")
-        log_file = os.path.join("logs", f"{name}_{date_str}.log")
+def setup_logger(name="bot_logger"):
+    log_dir = "logs"
+    os.makedirs(log_dir, exist_ok=True)   # <-- This line ensures the folder exists!
 
+    log_file = os.path.join(
+        log_dir,
+        f"software_bot_{datetime.now().strftime('%Y-%m-%d')}.log"
+    )
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
 
+    # Avoid adding multiple handlers in repeated runs
     if not logger.handlers:
         file_handler = logging.FileHandler(log_file, encoding='utf-8')
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
-
+        logger.propagate = False
     return logger
+
