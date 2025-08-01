@@ -17,6 +17,18 @@ async def extract_offers_and_image(page, url):
         og_image = await page.query_selector('meta[property="og:image"]')
         if og_image:
             image = await og_image.get_attribute('content')
+        # Fallback 1: Try standard <img> in header or main
+        if not image:
+            img_tag = await page.query_selector('header img') or await page.query_selector('img')
+            if img_tag:
+                src = await img_tag.get_attribute('src')
+                # If src is relative, join with base URL
+                if src and not src.startswith("http"):
+                    from urllib.parse import urljoin
+                    image = urljoin(url, src)
+                else:
+                    image = src
+
 
         # Extract visible offer points (basic)
         elements = await page.query_selector_all('li, p')
@@ -64,3 +76,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
