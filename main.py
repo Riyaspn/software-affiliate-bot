@@ -1,40 +1,52 @@
 import json
 import time
 import requests
-from datetime import datetime
+import re
+import os
+import sys
 from utils import setup_logger, clean_text, format_tags
 from config import BOT_TOKEN, CHANNEL_ID, POST_DELAY
-import re
 import asyncio
 from playwright.async_api import async_playwright
 
-# ---- PART 1: Select today's products ----
+# --- PART 1: Product selection (monthly rotation, history via post_history.json) ---
 
 from generate_today_products import generate_today_products
 
-# Generate today's products and write to software_affiliates.json
+# Select and save today's products to software_affiliates.json,
+# and update post_history.json as needed.
 generate_today_products()
 
 logger = setup_logger()
 
 
-# ---- PART 2: Scrape offers and images ----
+# --- PART 2: Scraping offers and images ---
 
 OFFER_KEYWORDS = ['off', 'free', 'save', '%', 'discount', 'deal']
 
 async def extract_offers_and_image(page, url):
     offers = []
     image = None
+    desc = ""
     try:
         await page.goto(url, timeout=30000)
-        await page.wait_for_timeout(4000)  # Give time for JS offers to appear
+        await page.wait_for_timeout(4000)  # Let the page load
 
         # Extract og:image
         og_image = await page.query_selector('meta[property="og:image"]')
         if og_image:
             image = await og_image.get_attribute('content')
 
-        # Extract list offers
+        # Extract meta description for product blurb (fallback to first <p> if absent)
+        meta_desc = await page.query_selector('meta[name="description"]')
+        if meta_desc:
+            desc = await meta_desc.get_attribute('content')
+        else:
+            first_p = await page.query_selector('p')
+            if first_p:
+                desc = await first_p.inner_text()
+
+        # Extract offer bullet points
         elements = await page.query_selector_all('li, p')
         for elem in elements:
             text = await elem.inner_text()
@@ -45,7 +57,7 @@ async def extract_offers_and_image(page, url):
 
     except Exception as e:
         logger.error(f"❌ Error scraping {url}: {e}")
-    return offers[:8], image
+    return offers[:8], image, desc
 
 async def run_scraper():
     try:
@@ -66,11 +78,14 @@ async def run_scraper():
                 logger.error(f"No website for {entry.get('name', '')}")
                 continue
             logger.info(f"🔍 Scraping: {entry['name']}")
-            offers, image = await extract_offers_and_image(page, url)
+            offers, image, desc = await extract_offers_and_image(page, url)
             if offers:
                 entry["offers"] = offers
             if image:
                 entry["image"] = image
+            # Only override description if it's missing in JSON.
+            if desc and not entry.get("desc"):
+                entry["desc"] = desc.strip()
             logger.info(f"✅ Done: {entry['name']} | {len(offers)} offers | image: {'yes' if image else 'no'}")
 
         await browser.close()
@@ -81,7 +96,7 @@ async def run_scraper():
     return data  # return enriched products
 
 
-# ---- PART 3: Posting to Telegram ----
+# --- PART 3: Posting to Telegram ---
 
 def escape_markdown(text):
     """Escapes Telegram Markdown special characters."""
@@ -115,15 +130,17 @@ def send_post(product):
     tags = product.get("tags", [])
     offers = product.get("offers", [])
     image_url = product.get("image")
+    # Prefer manual desc, fallback to scraped
     desc = product.get("desc", "No description available.")
 
+    # Clean/escape text for Markdown
     name_md = escape_markdown(clean_text(name))
     category_md = escape_markdown(clean_text(category))
     desc_md = escape_markdown(clean_text(desc))
     tags_str = format_tags(tags)
     offers_text = format_offers(offers)
 
-    # Compose a micro-advertisement message
+    # Compose the micro-advert
     message = (
         f"🔥 *{name_md}* — _{category_md}_\n"
         f"{desc_md}\n"
@@ -136,36 +153,40 @@ def send_post(product):
         "chat_id": CHANNEL_ID,
         "parse_mode": "Markdown",
     }
-    if image_url:
-        payload["photo"] = image_url
-        payload["caption"] = message
-        response = requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto", json=payload)
-    else:
-        payload["text"] = message
-        response = requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage", json=payload)
+    try:
+        if image_url:
+            payload["photo"] = image_url
+            payload["caption"] = message
+            response = requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto", json=payload)
+        else:
+            payload["text"] = message
+            response = requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage", json=payload)
+    except Exception as e:
+        logger.error(f"❌ Exception sending message for {name}: {e}")
+        return
 
-    # Logging as before
     if response.ok:
         logger.info(f"✅ Sent: {name}")
     else:
         logger.error(f"❌ Failed: {name} | Error: {response.text}")
 
 
-# ---- MAIN EXECUTION ----
 
 if __name__ == "__main__":
     logger.info("🚀 Starting unified affiliate bot: select, scrape, post.")
 
-    # STEP 1: Today's products selected above (already writes to software_affiliates.json)
+    # Fix for Playwright/asyncio on Windows, if needed
+    if sys.platform.startswith("win"):
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-    # STEP 2: Enrich with offers/images
+    # SCRAPE AND ENRICH
     actloop = asyncio.get_event_loop()
     enriched_products = actloop.run_until_complete(run_scraper())
     if not enriched_products:
         logger.error("No products found after enrichment, exiting.")
         exit(1)
 
-    # STEP 3: Post
+    # POST TO TELEGRAM
     for product in enriched_products:
         send_post(product)
         time.sleep(POST_DELAY)
