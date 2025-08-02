@@ -8,8 +8,14 @@ logger = setup_logger("scraper")
 
 
 from urllib.parse import urljoin
+import re
+import logging
 
-from urllib.parse import urljoin
+logger = logging.getLogger("extract")
+
+
+
+from urllib.parse import urlparse, urljoin
 import re
 import logging
 
@@ -20,48 +26,57 @@ async def extract_offers_and_image(page, url):
     image = None
     desc = ""
 
+    def looks_valid_img(src):
+        if not src or src.strip() == "":
+            return False
+        # Exclude sprites, icons, favicons, 1x1, pixels, blanks, spacers
+        return not re.search(r"(sprite|icon|favicon|1x1|pixel|blank|spacer)", src, re.I)
+
     try:
         await page.goto(url, timeout=40000)
-        await page.wait_for_timeout(5000)
+        await page.wait_for_timeout(5000)  # JS-render
 
-        # ---- (1) Try open graph meta ----
+        # (1) Open Graph
         og_image = await page.query_selector('meta[property="og:image"]')
         if og_image:
             image = await og_image.get_attribute('content')
-        # ---- (2) Try Twitter Card image ----
+
+        # (2) Twitter Card
         if not image:
             tw_img = await page.query_selector('meta[name="twitter:image"]')
             if tw_img:
                 image = await tw_img.get_attribute('content')
 
-        # ---- (3) Look for logo/hero/main images by smart selectors ----
+        # (3) <img> in header/nav or first N images (SVG/PNG/JPG/WebP ok, even size=0)
+        if not image:
+            header_imgs = await page.query_selector_all('header img, nav img')
+            checked_imgs = header_imgs or await page.query_selector_all('img')
+            for img in checked_imgs[:8]:
+                src = await img.get_attribute('src')
+                if src:
+                    if not src.startswith('http'):
+                        src = urljoin(url, src)
+                    if looks_valid_img(src) and any(src.lower().endswith(x) for x in ('.svg', '.png', '.jpg', '.jpeg', '.webp')):
+                        image = src
+                        break
+
+        # (4) Smart selectors for common product/brand/hero image patterns
         prioritized_selectors = [
-            'header img',               # Site header logo
-            'img.logo',                 # Common logo class
+            'img.logo',
             'img[alt*="logo" i]',
             'img[src*="logo"]',
-            'img[alt*="main" i]',       # Sometimes main/hero image
-            'img[src*="main"]',
             'img[alt*="brand" i]',
             'img[src*="brand"]',
+            'img[alt*="main" i]',
+            'img[src*="main"]',
             'img[alt*="product" i]',
             'img[src*="product"]',
-            'img[alt*="academy" i]', 
-            'img[src*="academy"]',
-            'img[alt*="easeus" i]',
-            'img[src*="easeus"]',
-            'img[alt]',                 # Any image with alt
-            'img',                      # Any image
+            'img[alt*="trusted" i]',
+            'img[src*="trusted"]',
+            'img[alt*="laplink" i]',
+            'img[src*="laplink"]',
         ]
-
-        # Only take reasonable-sized real images
-        def looks_valid_img(src):
-            if not src: return False
-            # Exclude sprites, 1x1s, tracking pixels, icons
-            return not re.search(r"(sprite|icons?|favicon|1x1|pixel|blank|spacer)", src, re.I)
-
         if not image:
-            image_found = False
             for sel in prioritized_selectors:
                 elems = await page.query_selector_all(sel)
                 for elem in elems:
@@ -70,17 +85,15 @@ async def extract_offers_and_image(page, url):
                         if not src.startswith("http"):
                             src = urljoin(url, src)
                         image = src
-                        image_found = True
                         break
-                if image_found:
+                if image:
                     break
 
-        # (4) CSS background image on big visible hero div etc
+        # (5) CSS background-image from inline style
         if not image:
             elems = await page.query_selector_all('[style*="background"]')
             for elem in elems:
                 style = await elem.get_attribute('style')
-                # Look for url("...")
                 match = re.search(r'background(-image)?\s*:\s*url\([\'"]?([^)\'"]+)', style or '', re.I)
                 if match:
                     css_img = match.group(2)
@@ -90,39 +103,46 @@ async def extract_offers_and_image(page, url):
                         image = css_img
                         break
 
-        # (5) Favicon (last-resort, usually not product!) 
+        # (6) Favicon as fallback
         if not image:
             fav_icon = await page.query_selector('link[rel="icon"], link[rel="shortcut icon"]')
             if fav_icon:
                 relimg = await fav_icon.get_attribute('href')
-                if relimg and looks_valid_img(relimg):
-                    image = urljoin(url, relimg)
+                if relimg:
+                    relimg = urljoin(url, relimg)
+                    if looks_valid_img(relimg):
+                        image = relimg
 
-        # ---- (6) Final fallback: the largest visible <img> on the page ----
-        # (often the main product/hero image or screenshot)
+        # (7) Largest visible <img> as last content fallback
         if not image:
             imgs = await page.query_selector_all('img')
             max_area = 0
             best_img = None
             for img in imgs:
                 src = await img.get_attribute('src')
-                # Only visible images
                 box = await img.bounding_box()
                 if not src or not looks_valid_img(src) or not box:
                     continue
-                area = box['width'] * box['height']
-                # Exclude tiny (typically icons)
-                if area > max_area and area > 3000:
+                area = (box['width'] or 1) * (box['height'] or 1)
+                if area > max_area and area > 2500:
                     max_area = area
                     best_img = src
             if best_img:
-                image = urljoin(url, best_img)
+                if not best_img.startswith('http'):
+                    best_img = urljoin(url, best_img)
+                image = best_img
 
-        # (7) Absolute last fallback
+        # (8) ABSOLUTE DYNAMIC FALLBACK: use domain for avatar/fallback
         if not image:
-            image = "https://yourdomain.com/default-affiliate-image.png"
+            domain = urlparse(url).netloc.replace("www.", "")
+            # Option A: ui-avatars (text initials, colored bg)
+            image = f"https://ui-avatars.com/api/?name={domain}&background=random"
+            # Option B: DiceBear Avatar SVG (more visual, unique by domain)
+            # image = f"https://api.dicebear.com/7.x/identicon/svg?seed={domain}"
+            # Option C: Google favicon as last resort
+            # image = f"https://www.google.com/s2/favicons?sz=128&domain={domain}"
 
-        # ---- Description ----
+        # --- Description extraction ---
         meta_desc = await page.query_selector('meta[name="description"]')
         if meta_desc:
             desc = await meta_desc.get_attribute('content')
@@ -131,7 +151,7 @@ async def extract_offers_and_image(page, url):
             if first_p:
                 desc = await first_p.inner_text()
 
-        # ---- Offer extraction ----
+        # --- Offer extraction ---
         elements = await page.query_selector_all('li, p')
         for elem in elements:
             text = await elem.inner_text()
@@ -142,7 +162,10 @@ async def extract_offers_and_image(page, url):
 
     except Exception as e:
         logger.error(f"❌ Error scraping {url}: {e}")
+
     return offers[:8], image, desc
+
+
 
 
 
@@ -180,6 +203,7 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
 
