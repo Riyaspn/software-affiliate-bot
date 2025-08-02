@@ -6,7 +6,6 @@ from utils import setup_logger
 logger = setup_logger("scraper")
 
 
-from urllib.parse import urljoin
 
 from urllib.parse import urljoin
 
@@ -125,6 +124,7 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
 
