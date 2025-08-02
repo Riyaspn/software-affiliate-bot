@@ -241,6 +241,47 @@
     "direct_affiliate": false,
     "tags": ["pets", "ecommerce"],
     "desc": "One-stop shop for your pets—order food, toys, accessories, and get care tips from Zigly."
-  }
+  },
+  ,
+{
+  "name": "Moosend",
+  "website": "https://moosend.com/",
+  "category": "Email Marketing",
+  "affiliate_link": "https://trymoo.moosend.com/wwlrrqikr70m",
+  "direct_affiliate": true,
+  "affiliate_network": "PartnerStack",
+  "tags": ["email", "automation", "marketing"],
+  "desc": "Moosend offers easy-to-use and affordable email marketing automation and newsletter solutions for businesses."
+},
+{
+  "name": "SaneBox",
+  "website": "https://sanebox.com/",
+  "category": "Productivity / Email",
+  "affiliate_link": "https://try.sanebox.com/6lpaoxjrk4zt",
+  "direct_affiliate": true,
+  "affiliate_network": "PartnerStack",
+  "tags": ["email", "productivity"],
+  "desc": "SaneBox cleans up your inbox, filters unimportant emails, and helps you focus on what matters."
+},
+{
+  "name": "ChemiCloud",
+  "website": "https://chemicloud.com/",
+  "category": "Web Hosting",
+  "affiliate_link": "https://chemicloud.com/#688e226be4ae6",
+  "direct_affiliate": true,
+  "tags": ["hosting", "cloud", "web"],
+  "desc": "ChemiCloud offers super-fast and reliable web hosting with 24/7 support and free migrations."
+},
+{
+  "name": "LearnWorlds",
+  "website": "https://learnworlds.com/",
+  "category": "Online Course Platform",
+  "affiliate_link": "https://get.learnworlds.com/cntdq7n4rga0",
+  "direct_affiliate": true,
+  "affiliate_network": "PartnerStack",
+  "tags": ["courses", "learning", "online platform"],
+  "desc": "LearnWorlds helps you create, sell, and market online courses and memberships with ease."
+}
 ]
+
 
