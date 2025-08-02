@@ -8,46 +8,53 @@ logger = setup_logger("scraper")
 
 from urllib.parse import urljoin
 
+from urllib.parse import urljoin
+
 async def extract_offers_and_image(page, url):
     offers = []
     image = None
     desc = ""
     try:
         await page.goto(url, timeout=30000)
-        await page.wait_for_timeout(4000)
+        await page.wait_for_timeout(4000)  # Allow JS to load offers/images
 
         # 1. Try OG image first
         og_image = await page.query_selector('meta[property="og:image"]')
         if og_image:
             image = await og_image.get_attribute('content')
 
-        # 2. Fallback: find logo image by typical header/img/logo selectors
+        # 2. Fallback: Try logo/brand image by common selectors
         if not image:
             selectors = [
-                'header img',            # common header logo
-                'img.logo',              # class="logo"
-                'img[alt*="logo"]',      # alt containing 'logo'
-                'img[src*="logo"]',      # src containing 'logo'
-                'img[alt*="easeus"]',    # alt containing EaseUS
-                'img[src*="easeus"]',    # src containing EaseUS
-                'link[rel="icon"]',      # favicon
+                'header img',                # Sitewide header logo
+                'img.logo',                  # Class name
+                'img[alt*="logo" i]',        # alt text contains logo
+                'img[src*="logo"]',          # src attr contains 'logo'
+                'img[alt*="academy" i]',     # alt text for academies
+                'img[src*="academy"]',
+                'img[alt*="open" i]',
+                'img[src*="open"]',
+                'img[alt*="zigly" i]',       # alt text for Zigly
+                'img[src*="zigly"]',
+                'img[alt*="easeus" i]',
+                'img[src*="easeus"]',
+                'link[rel="icon"]',          # favicon fallback
                 'link[rel="shortcut icon"]'
             ]
             for sel in selectors:
                 elem = await page.query_selector(sel)
                 if elem:
-                    if sel.startswith('img'):
-                        src = await elem.get_attribute('src')
-                    else:
-                        src = await elem.get_attribute('href')
+                    # img elements use 'src', link elements use 'href'
+                    attr = 'src' if sel.startswith('img') else 'href'
+                    src = await elem.get_attribute(attr)
                     if src:
-                        # Fix relative URLs
+                        # Fix relative URLs to absolute
                         if not src.startswith("http"):
                             src = urljoin(url, src)
                         image = src
-                        break  # stop at first found
+                        break  # Stop at first found
 
-        # 3. Still nothing? Fallback to favicon (always present)
+        # 3. Still nothing? Fallback to favicon (in case not already checked)
         if not image:
             favicon = await page.query_selector('link[rel="icon"]')
             if favicon:
@@ -55,7 +62,13 @@ async def extract_offers_and_image(page, url):
                 if src:
                     image = urljoin(url, src)
 
-        # Extract meta description for blurb, and any offers as before...
+        # 4. Final fallback: Default image if everything above fails
+        if not image:
+            image = "https://yourdomain.com/default-affiliate-image.png"  # Replace with your default
+
+        # ---- Offer and description extraction ----
+
+        # Meta description for product blurb
         meta_desc = await page.query_selector('meta[name="description"]')
         if meta_desc:
             desc = await meta_desc.get_attribute('content')
@@ -64,6 +77,7 @@ async def extract_offers_and_image(page, url):
             if first_p:
                 desc = await first_p.inner_text()
 
+        # Extract offers from list elements or paragraphs
         elements = await page.query_selector_all('li, p')
         for elem in elements:
             text = await elem.inner_text()
@@ -75,6 +89,7 @@ async def extract_offers_and_image(page, url):
     except Exception as e:
         logger.error(f"❌ Error scraping {url}: {e}")
     return offers[:8], image, desc
+
 
 
 
@@ -110,5 +125,6 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
