@@ -9,65 +9,120 @@ logger = setup_logger("scraper")
 
 from urllib.parse import urljoin
 
+from urllib.parse import urljoin
+import re
+import logging
+
+logger = logging.getLogger("extract")
+
 async def extract_offers_and_image(page, url):
     offers = []
     image = None
     desc = ""
-    try:
-        await page.goto(url, timeout=30000)
-        await page.wait_for_timeout(4000)  # Allow JS to load offers/images
 
-        # 1. Try OG image first
+    try:
+        await page.goto(url, timeout=40000)
+        await page.wait_for_timeout(5000)
+
+        # ---- (1) Try open graph meta ----
         og_image = await page.query_selector('meta[property="og:image"]')
         if og_image:
             image = await og_image.get_attribute('content')
-
-        # 2. Fallback: Try logo/brand image by common selectors
+        # ---- (2) Try Twitter Card image ----
         if not image:
-            selectors = [
-                'header img',                # Sitewide header logo
-                'img.logo',                  # Class name
-                'img[alt*="logo" i]',        # alt text contains logo
-                'img[src*="logo"]',          # src attr contains 'logo'
-                'img[alt*="academy" i]',     # alt text for academies
-                'img[src*="academy"]',
-                'img[alt*="open" i]',
-                'img[src*="open"]',
-                'img[alt*="zigly" i]',       # alt text for Zigly
-                'img[src*="zigly"]',
-                'img[alt*="easeus" i]',
-                'img[src*="easeus"]',
-                'link[rel="icon"]',          # favicon fallback
-                'link[rel="shortcut icon"]'
-            ]
-            for sel in selectors:
-                elem = await page.query_selector(sel)
-                if elem:
-                    # img elements use 'src', link elements use 'href'
-                    attr = 'src' if sel.startswith('img') else 'href'
-                    src = await elem.get_attribute(attr)
-                    if src:
-                        # Fix relative URLs to absolute
+            tw_img = await page.query_selector('meta[name="twitter:image"]')
+            if tw_img:
+                image = await tw_img.get_attribute('content')
+
+        # ---- (3) Look for logo/hero/main images by smart selectors ----
+        prioritized_selectors = [
+            'header img',               # Site header logo
+            'img.logo',                 # Common logo class
+            'img[alt*="logo" i]',
+            'img[src*="logo"]',
+            'img[alt*="main" i]',       # Sometimes main/hero image
+            'img[src*="main"]',
+            'img[alt*="brand" i]',
+            'img[src*="brand"]',
+            'img[alt*="product" i]',
+            'img[src*="product"]',
+            'img[alt*="academy" i]', 
+            'img[src*="academy"]',
+            'img[alt*="easeus" i]',
+            'img[src*="easeus"]',
+            'img[alt]',                 # Any image with alt
+            'img',                      # Any image
+        ]
+
+        # Only take reasonable-sized real images
+        def looks_valid_img(src):
+            if not src: return False
+            # Exclude sprites, 1x1s, tracking pixels, icons
+            return not re.search(r"(sprite|icons?|favicon|1x1|pixel|blank|spacer)", src, re.I)
+
+        if not image:
+            image_found = False
+            for sel in prioritized_selectors:
+                elems = await page.query_selector_all(sel)
+                for elem in elems:
+                    src = await elem.get_attribute('src')
+                    if src and looks_valid_img(src):
                         if not src.startswith("http"):
                             src = urljoin(url, src)
                         image = src
-                        break  # Stop at first found
+                        image_found = True
+                        break
+                if image_found:
+                    break
 
-        # 3. Still nothing? Fallback to favicon (in case not already checked)
+        # (4) CSS background image on big visible hero div etc
         if not image:
-            favicon = await page.query_selector('link[rel="icon"]')
-            if favicon:
-                src = await favicon.get_attribute('href')
-                if src:
-                    image = urljoin(url, src)
+            elems = await page.query_selector_all('[style*="background"]')
+            for elem in elems:
+                style = await elem.get_attribute('style')
+                # Look for url("...")
+                match = re.search(r'background(-image)?\s*:\s*url\([\'"]?([^)\'"]+)', style or '', re.I)
+                if match:
+                    css_img = match.group(2)
+                    if not css_img.startswith("http"):
+                        css_img = urljoin(url, css_img)
+                    if looks_valid_img(css_img):
+                        image = css_img
+                        break
 
-        # 4. Final fallback: Default image if everything above fails
+        # (5) Favicon (last-resort, usually not product!) 
         if not image:
-            image = "https://yourdomain.com/default-affiliate-image.png"  # Replace with your default
+            fav_icon = await page.query_selector('link[rel="icon"], link[rel="shortcut icon"]')
+            if fav_icon:
+                relimg = await fav_icon.get_attribute('href')
+                if relimg and looks_valid_img(relimg):
+                    image = urljoin(url, relimg)
 
-        # ---- Offer and description extraction ----
+        # ---- (6) Final fallback: the largest visible <img> on the page ----
+        # (often the main product/hero image or screenshot)
+        if not image:
+            imgs = await page.query_selector_all('img')
+            max_area = 0
+            best_img = None
+            for img in imgs:
+                src = await img.get_attribute('src')
+                # Only visible images
+                box = await img.bounding_box()
+                if not src or not looks_valid_img(src) or not box:
+                    continue
+                area = box['width'] * box['height']
+                # Exclude tiny (typically icons)
+                if area > max_area and area > 3000:
+                    max_area = area
+                    best_img = src
+            if best_img:
+                image = urljoin(url, best_img)
 
-        # Meta description for product blurb
+        # (7) Absolute last fallback
+        if not image:
+            image = "https://yourdomain.com/default-affiliate-image.png"
+
+        # ---- Description ----
         meta_desc = await page.query_selector('meta[name="description"]')
         if meta_desc:
             desc = await meta_desc.get_attribute('content')
@@ -76,7 +131,7 @@ async def extract_offers_and_image(page, url):
             if first_p:
                 desc = await first_p.inner_text()
 
-        # Extract offers from list elements or paragraphs
+        # ---- Offer extraction ----
         elements = await page.query_selector_all('li, p')
         for elem in elements:
             text = await elem.inner_text()
@@ -88,6 +143,7 @@ async def extract_offers_and_image(page, url):
     except Exception as e:
         logger.error(f"❌ Error scraping {url}: {e}")
     return offers[:8], image, desc
+
 
 
 
@@ -124,6 +180,7 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
 
